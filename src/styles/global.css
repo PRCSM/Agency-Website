@@ -1,0 +1,71 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  font-family: var(--f-main);
+  color: var(--c-black);
+  background: var(--c-white);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input, textarea { font: inherit; color: inherit; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+ul { list-style: none; }
+:focus-visible { outline: 2px solid var(--c-blue-700); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- controller ---------- */
+.controller { position: fixed; inset: 0; overflow: hidden; isolation: isolate; }
+.section {
+  position: absolute; inset: 0; overflow: hidden;
+  transform: translate3d(0, 100%, 0);
+  visibility: hidden;
+}
+.section.is-active { transform: none; visibility: visible; }
+.section.is-above { transform: translate3d(0, -30%, 0); }
+.section.is-below { transform: translate3d(0, 100%, 0); }
+.section.is-involved { visibility: visible; transition: transform var(--t-swap) var(--ease-swap); }
+.controller.no-anim .section { transition: none !important; }
+
+/* ---------- reveal helpers ---------- */
+.mask-line { display: block; overflow: hidden; }
+.reveal-tilt {
+  display: inline-block; opacity: 0;
+  transform: translateY(2.8rem) rotate(3deg); transform-origin: left bottom;
+  transition: transform 0.6s var(--ease-out), opacity 0.6s var(--ease-out);
+}
+.is-in .reveal-tilt { opacity: 1; transform: none; }
+.reveal-up {
+  display: inline-block; opacity: 0; transform: translateY(100%);
+  transition: transform 0.6s var(--ease-out), opacity 0.6s var(--ease-out);
+}
+.is-in .reveal-up { opacity: 1; transform: none; }
+
+/* ---------- rolling link text ---------- */
+.roll { position: relative; display: inline-flex; overflow: hidden; vertical-align: top; }
+.roll__ghost { visibility: hidden; white-space: nowrap; }
+.roll__track { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.roll__track > span { white-space: nowrap; transition: transform var(--t-roll) ease; transform-origin: left center; }
+.roll__track > span:last-child { transform: translateY(50%) rotate(-10deg); }
+.roll-host:hover .roll__track > span:first-child,
+.roll-host:focus-visible .roll__track > span:first-child { transform: translateY(-150%) rotate(-10deg); }
+.roll-host:hover .roll__track > span:last-child,
+.roll-host:focus-visible .roll__track > span:last-child { transform: translateY(-100%) rotate(0); }
+
+/* blob that follows the pointer inside a link (difference blend inverts the text) */
+.blob-host { position: relative; isolation: isolate; }
+.blob {
+  position: absolute; left: var(--bx, 50%); top: var(--by, 50%);
+  width: 3.2rem; height: 3.2rem; border-radius: 50%;
+  background: #fff; mix-blend-mode: difference; pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.35s var(--ease-out);
+  z-index: 2;
+}
+.blob-host:hover .blob { transform: translate(-50%, -50%) scale(1); }
+@media (hover: none) { .blob { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+}
